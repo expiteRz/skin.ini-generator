@@ -22,56 +22,62 @@ fun main() = Window(title = "skin.ini Generator", size = IntSize(600, 900)) {
     DesktopMaterialTheme {
         Column {
             TopAppBar(title = { Text("skin.ini Generator") })
-            Main().content()
+            content()
         }
     }
 }
 
-open class Main {
-    @Composable
-    fun content() = Column(modifier = Modifier.padding(Dp(16f))) {
-        var name by remember { mutableStateOf("") }
-        var author by remember { mutableStateOf(System.getProperty("user.name") as String) }
-        var versionList = listOf("1.0", "2.0", "2.1", "2.2", "2.3", "2.4", "2.5", "latest")
-        var versionSelected by remember { mutableStateOf(0) }
-        var showVerMenu by remember { mutableStateOf(false) }
+@Composable
+fun content() = Column(modifier = Modifier.padding(Dp(16f))) {
+    var name by remember { mutableStateOf("") }
+    var author by remember { mutableStateOf(System.getProperty("user.name") as String) }
+    var versionList = listOf("1.0", "2.0", "2.1", "2.2", "2.3", "2.4", "2.5", "latest")
+    var versionSelected by remember { mutableStateOf(7) }
+    var showVerMenu by remember { mutableStateOf(false) }
 
-        // General
-        Card {
-            Column(
-                Modifier.padding(Dp(16f))
+    // General
+    Card {
+        Column(
+            Modifier.padding(Dp(16f))
+        ) {
+            Text("General", fontSize = TextUnit.Sp(20))
+            Text("Name of skin")
+            TextField(name, onValueChange = { name = it })
+            Text("Author")
+            TextField(author, onValueChange = { author = it })
+            Text("Version")
+            DropdownMenu(
+                expanded = showVerMenu,
+                onDismissRequest = { showVerMenu = false },
+                toggle = @Composable {
+                    OutlinedButton(onClick = {
+                        showVerMenu = true
+                        println(versionSelected)
+                    }) {
+                        Text(versionList[versionSelected])
+                    }
+                }
             ) {
-                Text("General", fontSize = TextUnit.Sp(20))
-                Text("Name of skin")
-                TextField(name, onValueChange = { name = it })
-                Text("Author")
-                TextField(author, onValueChange = { author = it })
-                Text("Version")
-                DropdownMenu(
-                    expanded = showVerMenu,
-                    onDismissRequest = { !showVerMenu },
-                    toggle = @Composable {
-                        IconButton(onClick = { !showVerMenu }) {
-                            Icon(Icons.Default.MoreVert)
-                        }
+                versionList.forEachIndexed { index, s ->
+                    DropdownMenuItem(onClick = {
+                        showVerMenu = false
+                        versionSelected = index
+                    }) {
+                        Text(s)
                     }
-                ) {
-                    versionList.forEachIndexed { index, s ->
-                        DropdownMenuItem(onClick = { !showVerMenu }) {
-                            Text(s)
-                        }
-                    }
-                }
-            }
-
-            Card {
-                Column(
-                    Modifier.padding(Dp(16f))
-                ) {
-                    Text("Settings", fontSize = TextUnit.Sp(20))
-                    Text("")
                 }
             }
         }
     }
+
+    // Some Settings
+    Card {
+        Column(
+            Modifier.padding(Dp(16f))
+        ) {
+            Text("Settings", fontSize = TextUnit.Sp(20))
+            Text("")
+        }
+    }
 }
+
