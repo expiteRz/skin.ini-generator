@@ -1,30 +1,24 @@
-import androidx.compose.animation.animateContentSize
-import androidx.compose.desktop.AppManager
 import androidx.compose.desktop.DesktopMaterialTheme
 import androidx.compose.desktop.Window
-import androidx.compose.desktop.WindowEvents
 import androidx.compose.foundation.ScrollableColumn
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.gesture.scrollorientationlocking.Orientation
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerEvent
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.HorizontalAlignmentLine
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import java.awt.FileDialog
+import java.awt.Frame
+import javax.swing.JComponent
+import javax.swing.plaf.FileChooserUI
 import kotlin.system.exitProcess
 
 
@@ -34,8 +28,8 @@ fun main() = Window(
     undecorated = false, // Hopefully it's set to true in the future
 ) {
     var toggleMenu by remember { mutableStateOf(false) }
-    var (showDialog, setShowDialog) = remember { mutableStateOf(false) }
-    var menuList = listOf("Open", "Save", "Save as")
+    val (showDialog, setShowDialog) = remember { mutableStateOf(false) }
+    val menuList = listOf("Open", "Save", "Save as")
     DesktopMaterialTheme {
         Column {
             TopAppBar(title = { Text("skin.ini Generator") }, actions = {
@@ -44,8 +38,17 @@ fun main() = Window(
                         Icon(Icons.Default.MoreVert, "")
                     }
                 }, toggleMenu, onDismissRequest = { toggleMenu = false }) {
-                    menuList.forEachIndexed { _, s ->
-                        DropdownMenuItem({ println(s) }) {
+                    menuList.forEachIndexed { i, s ->
+                        DropdownMenuItem({
+                            println(s)
+                            if (i == 0) {
+                                toggleMenu = false
+                                FileDialog(Frame()).also {
+                                    it.title = "Select skin.ini..."
+                                    it.isVisible = true
+                                }
+                            }
+                        }) {
                             Text(s)
                         }
                     }
@@ -54,13 +57,11 @@ fun main() = Window(
                         Text("Exit")
                     }
                 }
-                IconButton({ setShowDialog(true) }) {
-                    Icon(Icons.Default.Close, "")
+                IconButton({ println("New!") }) {
+                    Icon(Icons.Default.Add, "")
                 }
             })
-            ScrollableColumn {
-                content()
-            }
+            content()
             showDialog(showDialog, setShowDialog)
         }
     }
@@ -171,15 +172,16 @@ fun content() = Column(modifier = Modifier.padding(Dp(16f))) {
 
 @Composable
 fun showDialog(showDialog: Boolean, setShowDialog: (Boolean) -> Unit) {
+    val modifier = Modifier.padding(16.dp)
     if (showDialog) {
         AlertDialog(
             onDismissRequest = {},
             title = { Text("Please wait") },
             buttons = {
-                Row(horizontalArrangement = Arrangement.End) {
-                    Button({ println("Save") }) { Text("Save") } // Save
-                    Button({ println("Dismiss") }) { Text("Dismiss") } // Dismiss
-                    Button({ setShowDialog(false) }) { Text("Cancel") } // Cancel
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                    Button({ println("Save") }, modifier) { Text("Save") } // Save
+                    Button({ println("Dismiss"); exitProcess(0) }, modifier) { Text("Dismiss") } // Dismiss
+                    Button({ setShowDialog(false) }, modifier) { Text("Cancel") } // Cancel
                 }
             },
             text = { Text("You still have changes.\nAre you sure to quit the application?") }
