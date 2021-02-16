@@ -17,8 +17,6 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.gesture.ExperimentalPointerInput
-import androidx.compose.ui.gesture.WindowTouchSlop
 import androidx.compose.ui.gesture.scrollorientationlocking.Orientation
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEvent
@@ -26,10 +24,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.HorizontalAlignmentLine
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.*
 import kotlin.system.exitProcess
 
 
@@ -46,7 +41,7 @@ fun main() = Window(
             TopAppBar(title = { Text("skin.ini Generator") }, actions = {
                 DropdownMenu({
                     IconButton({ println("Opened!"); toggleMenu = true }) {
-                        Icon(Icons.Default.MoreVert)
+                        Icon(Icons.Default.MoreVert, "")
                     }
                 }, toggleMenu, onDismissRequest = { toggleMenu = false }) {
                     menuList.forEachIndexed { _, s ->
@@ -60,7 +55,7 @@ fun main() = Window(
                     }
                 }
                 IconButton({ setShowDialog(true) }) {
-                    Icon(Icons.Default.Close)
+                    Icon(Icons.Default.Close, "")
                 }
             })
             ScrollableColumn {
@@ -89,7 +84,7 @@ fun content() = Column(modifier = Modifier.padding(Dp(16f))) {
         Column(
             Modifier.padding(Dp(16f))
         ) {
-            Text("General", fontSize = TextUnit.Sp(20))
+            Text("General", fontSize = 20.sp)
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
@@ -118,7 +113,7 @@ fun content() = Column(modifier = Modifier.padding(Dp(16f))) {
                                 Text(versionList[versionSelected], textAlign = TextAlign.Start)
                             }
                             Row(horizontalArrangement = Arrangement.End) {
-                                Icon(Icons.Default.ArrowDropDown)
+                                Icon(Icons.Default.ArrowDropDown, "")
                             }
                         }
                     }
@@ -141,7 +136,7 @@ fun content() = Column(modifier = Modifier.padding(Dp(16f))) {
         Column(
             Modifier.padding(Dp(16f))
         ) {
-            Text("Settings", fontSize = TextUnit.Sp(20))
+            Text("Settings", fontSize = 20.sp)
             OutlinedTextField(
                 value = framerate,
                 onValueChange = { framerate = it },
