@@ -1,13 +1,6 @@
-import androidx.compose.animation.animateContentSize
-import androidx.compose.desktop.AppManager
 import androidx.compose.desktop.DesktopMaterialTheme
 import androidx.compose.desktop.Window
-import androidx.compose.desktop.WindowEvents
 import androidx.compose.foundation.ScrollableColumn
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -15,17 +8,12 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.gesture.scrollorientationlocking.Orientation
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerEvent
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.HorizontalAlignmentLine
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.*
-import kotlin.system.exitProcess
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 
 fun main() = Window(
@@ -34,8 +22,8 @@ fun main() = Window(
     undecorated = false, // Hopefully it's set to true in the future
 ) {
     var toggleMenu by remember { mutableStateOf(false) }
-    var (showDialog, setShowDialog) = remember { mutableStateOf(false) }
-    var menuList = listOf("Open", "Save", "Save as")
+    val (showDialog, setShowDialog) = remember { mutableStateOf(false) }
+    val menuList = listOf("Open", "Save", "Save as")
     DesktopMaterialTheme {
         Column {
             TopAppBar(title = { Text("skin.ini Generator") }, actions = {
@@ -156,12 +144,15 @@ fun content() = Column(modifier = Modifier.padding(Dp(16f))) {
                 Modifier.padding(6.dp)
             )
             Text("Center Cursor", Modifier.padding(8.dp))
-            Switch(
-                centeredCursor,
-                { centeredCursor = it },
-                Modifier.padding(6.dp)
-            )
-            Text("Expand Cursor", Modifier.padding(8.dp))
+            Row {
+                Switch(
+                    centeredCursor,
+                    { centeredCursor = it },
+                    Modifier.padding(6.dp)
+                )
+                Text(if (centeredCursor) "Center" else "Top-Left", Modifier.padding(start = 8.dp))
+            }
+            Text("Expand Cursor When Clicked", Modifier.padding(8.dp))
             Switch(
                 expandCursor, { expandCursor = it }, Modifier.padding(6.dp)
             )
@@ -173,13 +164,13 @@ fun content() = Column(modifier = Modifier.padding(Dp(16f))) {
 fun showDialog(showDialog: Boolean, setShowDialog: (Boolean) -> Unit) {
     if (showDialog) {
         AlertDialog(
-            onDismissRequest = {},
+            onDismissRequest = { setShowDialog(false) },
             title = { Text("Please wait") },
             buttons = {
-                Row(horizontalArrangement = Arrangement.End) {
-                    Button({ println("Save") }) { Text("Save") } // Save
-                    Button({ println("Dismiss") }) { Text("Dismiss") } // Dismiss
-                    Button({ setShowDialog(false) }) { Text("Cancel") } // Cancel
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                    Button({ println("Save") }, Modifier.padding(8.dp)) { Text("Save") } // Save
+                    Button({ println("Dismiss") }, Modifier.padding(8.dp)) { Text("Dismiss") } // Dismiss
+                    Button({ setShowDialog(false) }, Modifier.padding(8.dp)) { Text("Cancel") } // Cancel
                 }
             },
             text = { Text("You still have changes.\nAre you sure to quit the application?") }
