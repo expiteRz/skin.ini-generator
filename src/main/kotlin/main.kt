@@ -1,11 +1,10 @@
 import androidx.compose.desktop.DesktopMaterialTheme
 import androidx.compose.desktop.Window
-import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -14,6 +13,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.awt.FileDialog
+import java.awt.Frame
+import kotlin.system.exitProcess
 
 
 fun main() = Window(
@@ -32,8 +34,17 @@ fun main() = Window(
                         Icon(Icons.Default.MoreVert, "")
                     }
                 }, toggleMenu, onDismissRequest = { toggleMenu = false }) {
-                    menuList.forEachIndexed { _, s ->
-                        DropdownMenuItem({ println(s) }) {
+                    menuList.forEachIndexed { i, s ->
+                        DropdownMenuItem({
+                            println(s)
+                            if (i == 0) {
+                                toggleMenu = false
+                                FileDialog(Frame()).also {
+                                    it.title = "Select skin.ini..."
+                                    it.isVisible = true
+                                }
+                            }
+                        }) {
                             Text(s)
                         }
                     }
@@ -42,13 +53,11 @@ fun main() = Window(
                         Text("Exit")
                     }
                 }
-                IconButton({ setShowDialog(true) }) {
-                    Icon(Icons.Default.Close, "")
+                IconButton({ println("New!") }) {
+                    Icon(Icons.Default.Add, "")
                 }
             })
-            ScrollableColumn {
-                content()
-            }
+            content()
             showDialog(showDialog, setShowDialog)
         }
     }
@@ -162,15 +171,16 @@ fun content() = Column(modifier = Modifier.padding(Dp(16f))) {
 
 @Composable
 fun showDialog(showDialog: Boolean, setShowDialog: (Boolean) -> Unit) {
+    val modifier = Modifier.padding(16.dp)
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { setShowDialog(false) },
             title = { Text("Please wait") },
             buttons = {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                    Button({ println("Save") }, Modifier.padding(8.dp)) { Text("Save") } // Save
-                    Button({ println("Dismiss") }, Modifier.padding(8.dp)) { Text("Dismiss") } // Dismiss
-                    Button({ setShowDialog(false) }, Modifier.padding(8.dp)) { Text("Cancel") } // Cancel
+                    Button({ println("Save") }, modifier) { Text("Save") } // Save
+                    Button({ println("Dismiss"); exitProcess(0) }, modifier) { Text("Dismiss") } // Dismiss
+                    Button({ setShowDialog(false) }, modifier) { Text("Cancel") } // Cancel
                 }
             },
             text = { Text("You still have changes.\nAre you sure to quit the application?") }
